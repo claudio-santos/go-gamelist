@@ -1,0 +1,144 @@
+{{define "detail.html"}}
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{.Title}}</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎮%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" crossorigin="anonymous"></script>
+</head>
+<body>
+  <section class="section">
+    <div class="container">
+      <nav class="level is-mobile">
+        <div class="level-left">
+          <a class="button is-light" href="{{.BackURL}}">Back to list</a>
+        </div>
+        <div class="level-right">
+          <button class="button is-small is-dark" data-theme-toggle>Dark</button>
+        </div>
+      </nav>
+
+      <div class="box">
+        <div class="block">
+          {{if .Game.SourceList}}
+          <div class="tags mb-2">
+            {{range .Game.SourceList}}<span class="tag is-info is-light">{{.}}</span>{{end}}
+          </div>
+          {{end}}
+          <h1 class="title is-2">{{.Game.Name}}</h1>
+          <p class="subtitle is-5">{{.Game.Developers}}{{if and .Game.Developers .Game.Publishers}} · {{end}}{{.Game.Publishers}}</p>
+        </div>
+
+        <div class="level">
+          {{if .Game.CommunityScore}}
+          <div class="level-item has-text-centered">
+            <div>
+              <p class="heading">Score</p>
+              <p class="title is-5">{{.Game.CommunityScore}}</p>
+            </div>
+          </div>
+          {{end}}
+          {{if .Game.CriticScore}}
+          <div class="level-item has-text-centered">
+            <div>
+              <p class="heading">Critic</p>
+              <p class="title is-5">{{.Game.CriticScore}}</p>
+            </div>
+          </div>
+          {{end}}
+          {{if .Game.Completion}}
+          <div class="level-item has-text-centered">
+            <div>
+              <p class="heading">Status</p>
+              <p class="title is-6">{{.Game.Completion}}</p>
+            </div>
+          </div>
+          {{end}}
+          {{$pt := fmtPlayTime .Game.PlayTime}}{{if $pt}}
+          <div class="level-item has-text-centered">
+            <div>
+              <p class="heading">Play Time</p>
+              <p class="title is-6">{{$pt}}</p>
+            </div>
+          </div>
+          {{end}}
+        </div>
+
+        {{if .Game.Description}}
+        <div class="block content">
+          <h2 class="title is-5 mb-2">Description</h2>
+          <div>{{safeHTML .Game.Description}}</div>
+        </div>
+        {{end}}
+
+        <div class="block">
+          <h2 class="title is-5 mb-2">Details</h2>
+          <table class="table is-fullwidth is-narrow">
+            <tbody>
+              {{if .Game.Developers}}
+              <tr><td class="has-text-weight-semibold">Developer</td><td>{{.Game.Developers}}</td></tr>
+              {{end}}
+              {{if and .Game.Publishers (ne .Game.Publishers .Game.Developers)}}
+              <tr><td class="has-text-weight-semibold">Publisher</td><td>{{.Game.Publishers}}</td></tr>
+              {{end}}
+              {{if .Game.Genres}}
+              <tr>
+                <td class="has-text-weight-semibold">Genres</td>
+                <td><div class="tags">{{range .Game.GenreList}}<span class="tag">{{.}}</span>{{end}}</div></td>
+              </tr>
+              {{end}}
+              {{if .Game.AgeRating}}
+              <tr><td class="has-text-weight-semibold">Age Rating</td><td>{{.Game.AgeRating}}</td></tr>
+              {{end}}
+              {{if .Game.Series}}
+              <tr><td class="has-text-weight-semibold">Series</td><td>{{.Game.Series}}</td></tr>
+              {{end}}
+              {{if .Game.Features}}
+              <tr>
+                <td class="has-text-weight-semibold">Features</td>
+                <td><div class="tags">{{range .Game.FeatureList}}<span class="tag">{{.}}</span>{{end}}</div></td>
+              </tr>
+              {{end}}
+              {{if .Game.Platforms}}
+              <tr><td class="has-text-weight-semibold">Platform</td><td>{{.Game.Platforms}}</td></tr>
+              {{end}}
+              {{if .Game.ReleaseDate}}
+              <tr><td class="has-text-weight-semibold">Release Date</td><td>{{.Game.ReleaseDate}}</td></tr>
+              {{end}}
+              {{if .Game.Added}}
+              <tr><td class="has-text-weight-semibold">Added</td><td>{{formatDate .Game.Added}}</td></tr>
+              {{end}}
+              {{if .Game.LastPlayed}}
+              <tr><td class="has-text-weight-semibold">Last Played</td><td>{{formatDate .Game.LastPlayed}}</td></tr>
+              {{end}}
+              {{if .Game.DateModified}}
+              <tr><td class="has-text-weight-semibold">Date Modified</td><td>{{formatDate .Game.DateModified}}</td></tr>
+              {{end}}
+              {{if .Game.InstallFolder}}
+              <tr><td class="has-text-weight-semibold">Install Folder</td><td>{{.Game.InstallFolder}}</td></tr>
+              {{end}}
+
+            </tbody>
+          </table>
+        </div>
+
+        {{if .Game.LinkList}}
+        <div class="block">
+          <h2 class="title is-5 mb-2">Links</h2>
+          <div class="buttons">
+            {{range .Game.LinkList}}
+            <a class="button is-small" href="{{.URL}}" target="_blank" rel="noopener">{{.Name}}</a>
+            {{end}}
+          </div>
+        </div>
+        {{end}}
+      </div>
+    </div>
+  </section>
+  {{template "darkmode" .}}
+</body>
+</html>
+{{end}}

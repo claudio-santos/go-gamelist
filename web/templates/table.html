@@ -1,0 +1,49 @@
+{{define "table.html"}}
+<div class="block">
+  <p>
+    <strong>{{.FilteredCount}}</strong>
+    {{if eq .FilteredCount 1}}game found{{else}}games found{{end}}
+    {{if .Filters.HasActive}}with active filters.{{end}}
+  </p>
+</div>
+
+{{if .Results}}
+{{template "pagination" .}}
+<div class="table-container">
+  <table class="table is-fullwidth is-narrow is-hoverable">
+    <thead>
+      <tr>
+        <th><a class="has-text-current" hx-get="{{sortURL $.Filters "name"}}" hx-target="#games-grid" hx-push-url="true">Name{{sortIndicator $.Filters "name"}}</a></th>
+        <th><a class="has-text-current" hx-get="{{sortURL $.Filters "source"}}" hx-target="#games-grid" hx-push-url="true">Source{{sortIndicator $.Filters "source"}}</a></th>
+        <th class="is-hidden-mobile"><a class="has-text-current" hx-get="{{sortURL $.Filters "developer"}}" hx-target="#games-grid" hx-push-url="true">Developer{{sortIndicator $.Filters "developer"}}</a></th>
+        <th class="is-hidden-touch"><a class="has-text-current" hx-get="{{sortURL $.Filters "genres"}}" hx-target="#games-grid" hx-push-url="true">Genres{{sortIndicator $.Filters "genres"}}</a></th>
+        <th class="is-hidden-touch"><a class="has-text-current" hx-get="{{sortURL $.Filters "release"}}" hx-target="#games-grid" hx-push-url="true">Release{{sortIndicator $.Filters "release"}}</a></th>
+        <th class="is-hidden-mobile"><a class="has-text-current" hx-get="{{sortURL $.Filters "score"}}" hx-target="#games-grid" hx-push-url="true">Score{{sortIndicator $.Filters "score"}}</a></th>
+        <th style="white-space:nowrap"><a class="has-text-current" hx-get="{{sortURL $.Filters "playtime"}}" hx-target="#games-grid" hx-push-url="true">Play time{{sortIndicator $.Filters "playtime"}}</a></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .Results}}
+      <tr>
+        <td><a href="{{gameURL .ID $.FilterQuery}}">{{.Name}}</a></td>
+        <td>{{if .Sources}}{{.Sources}}{{end}}</td>
+        <td class="is-hidden-mobile">{{if .Developers}}{{.Developers}}{{end}}</td>
+        <td class="is-hidden-touch">{{if .GenreList}}<div class="tags">{{range .GenreList}}<span class="tag is-small">{{.}}</span>{{end}}</div>{{end}}</td>
+        <td class="is-hidden-touch">{{if .ReleaseDate}}{{.ReleaseDate}}{{end}}</td>
+        <td class="is-hidden-mobile">{{if .CommunityScore}}{{.CommunityScore}}{{else}}&nbsp;{{end}}</td>
+        <td style="white-space:nowrap">{{fmtPlayTime .PlayTime}}</td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+</div>
+
+{{template "pagination" .}}
+{{else}}
+<div class="notification is-light">
+  <h2 class="title is-5">No results</h2>
+  <p>Adjust the filters to see the full library again.</p>
+  {{if .Filters.HasActive}}<a href="/" class="button is-light is-small mt-2">Clear all filters</a>{{end}}
+</div>
+{{end}}
+{{end}}

@@ -1,0 +1,17 @@
+{{define "pagination"}}
+{{if gt .TotalPages 1}}
+<nav class="pagination" role="navigation" aria-label="pagination">
+  <p class="mr-auto">Page {{.Page}} of {{.TotalPages}}</p>
+  {{if .HasPrev}}
+  <a class="pagination-previous" hx-get="{{.PrevPageURL}}" hx-target="#games-grid" hx-push-url="true">Previous</a>
+  {{else}}
+  <a class="pagination-previous" disabled>Previous</a>
+  {{end}}
+  {{if .HasNext}}
+  <a class="pagination-next" hx-get="{{.NextPageURL}}" hx-target="#games-grid" hx-push-url="true">Next</a>
+  {{else}}
+  <a class="pagination-next" disabled>Next</a>
+  {{end}}
+</nav>
+{{end}}
+{{end}}

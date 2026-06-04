@@ -1,0 +1,54 @@
+{{define "darkmode"}}
+<script>
+(function() {
+  var html = document.documentElement;
+  var theme = localStorage.getItem('theme');
+  if (theme === 'dark') {
+    html.dataset.theme = 'dark';
+  } else if (theme === 'light') {
+    html.dataset.theme = 'light';
+  }
+  window.__isDark = function() {
+    if (html.dataset.theme === 'dark') return true;
+    if (html.dataset.theme === 'light') return false;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  };
+  window.__updateThemeBtn = function() {
+    var btn = document.querySelector('[data-theme-toggle]');
+    if (btn) btn.textContent = window.__isDark() ? 'Light' : 'Dark';
+  };
+  window.__swapTheme = function() {
+    var dark = window.__isDark();
+    var toggleBtn = document.querySelector('[data-theme-toggle]');
+    if (toggleBtn) {
+      toggleBtn.classList.remove('is-light', 'is-dark');
+      toggleBtn.classList.add(dark ? 'is-light' : 'is-dark');
+    }
+    var els = document.querySelectorAll('.is-light, .is-dark');
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      if (el === toggleBtn) continue;
+      if (dark && el.classList.contains('is-light'))
+        el.classList.replace('is-light', 'is-dark');
+      else if (!dark && el.classList.contains('is-dark'))
+        el.classList.replace('is-dark', 'is-light');
+    }
+  };
+  window.__updateThemeBtn();
+  window.__swapTheme();
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-theme-toggle]');
+    if (!btn) return;
+    if (window.__isDark()) {
+      html.dataset.theme = 'light';
+      localStorage.setItem('theme', 'light');
+    } else {
+      html.dataset.theme = 'dark';
+      localStorage.setItem('theme', 'dark');
+    }
+    window.__updateThemeBtn();
+    window.__swapTheme();
+  });
+})();
+</script>
+{{end}}

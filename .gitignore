@@ -1,0 +1,10 @@
+go-gamelist.exe
+*.exe
+*.test
+*.out
+
+/dist/
+/build/
+
+.idea/
+.vscode/

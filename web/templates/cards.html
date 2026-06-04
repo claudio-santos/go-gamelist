@@ -1,0 +1,60 @@
+{{define "cards.html"}}
+<div class="block">
+  <p>
+    <strong>{{.FilteredCount}}</strong>
+    {{if eq .FilteredCount 1}}game found{{else}}games found{{end}}
+    {{if .Filters.HasActive}}with active filters.{{end}}
+  </p>
+</div>
+
+{{if .Results}}
+{{template "pagination" .}}
+<div class="columns is-multiline">
+  {{range .Results}}
+  <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+    <div class="card">
+      <div class="card-content">
+        <div class="level is-mobile">
+          <div class="level-left">
+            <p class="is-size-7">{{.Sources}}</p>
+          </div>
+          <div class="level-right">
+            {{if .CommunityScore}}<p class="is-size-7">Score {{.CommunityScore}}</p>{{end}}
+          </div>
+        </div>
+        <p class="title is-4"><a href="{{gameURL .ID $.FilterQuery}}">{{.Name}}</a></p>
+        {{if .Developers}}<p class="subtitle is-6">{{.Developers}}</p>{{end}}
+        <p class="content">{{.Summary}}</p>
+        <div class="tags">
+          {{range .GenreList}}
+          <span class="tag">{{.}}</span>
+          {{end}}
+        </div>
+        {{$pt := fmtPlayTime .PlayTime}}{{if or .LastPlayed $pt}}
+        <div class="level is-mobile">
+          <div class="level-left">
+            {{if $pt}}<p class="is-size-7">Total {{$pt}}</p>{{end}}
+          </div>
+          <div class="level-right">
+            {{if .LastPlayed}}<p class="is-size-7">Last {{formatDate .LastPlayed}}</p>{{end}}
+          </div>
+        </div>
+        {{end}}
+      </div>
+      <footer class="card-footer">
+        <a class="card-footer-item" href="{{gameURL .ID $.FilterQuery}}">View details</a>
+      </footer>
+    </div>
+  </div>
+  {{end}}
+</div>
+
+{{template "pagination" .}}
+{{else}}
+<div class="notification is-light">
+  <h2 class="title is-5">No results</h2>
+  <p>Adjust the filters to see the full library again.</p>
+  {{if .Filters.HasActive}}<a href="/" class="button is-light is-small mt-2">Clear all filters</a>{{end}}
+</div>
+{{end}}
+{{end}}

@@ -1,0 +1,5 @@
+# Application HTTP port
+port: 8080
+
+# Relative path to the Playnite CSV export
+csv: mygames.csv

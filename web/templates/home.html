@@ -1,0 +1,185 @@
+{{define "home.html"}}
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{.Title}}</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎮%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" crossorigin="anonymous"></script>
+</head>
+<body>
+  <section class="section">
+    <div class="container">
+      <div class="block">
+        <div class="level is-mobile">
+          <div class="level-left">
+            <h1 class="title">Go Gamelist</h1>
+          </div>
+          <div class="level-right">
+            <div class="buttons are-small">
+              <button class="button{{if ne .View "table"}} is-dark{{end}}" data-view-toggle>Cards</button>
+              <button class="button{{if eq .View "table"}} is-dark{{end}}" data-view-toggle>Table</button>
+              <button class="button is-dark" data-theme-toggle aria-label="Toggle dark mode">Dark</button>
+            </div>
+          </div>
+        </div>
+        <p class="subtitle">Browse your game library.</p>
+        <p><strong>{{.List.FilteredCount}}</strong> results of <strong>{{.List.TotalCount}}</strong> total.</p>
+      </div>
+
+      <form
+        class="box"
+        hx-get="/games"
+        hx-target="#games-grid"
+        hx-push-url="true"
+        hx-trigger="input changed delay:250ms, change"
+      >
+        <div class="columns">
+          <div class="column is-4">
+            <div class="field">
+              <label class="label">Search</label>
+              <div class="control">
+                <input class="input" type="search" name="q" value="{{.List.Filters.Query}}" placeholder="Name, dev, publisher...">
+              </div>
+            </div>
+          </div>
+          <div class="column is-3">
+            <div class="field">
+              <label class="label">Genre</label>
+              <div class="control">
+                <div class="select is-fullwidth">
+                  <select name="genre">
+                    <option value="">All</option>
+                    {{range .List.Genres}}
+                    <option value="{{.}}" {{if eq $.List.Filters.Genre .}}selected{{end}}>{{.}}</option>
+                    {{end}}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="column is-2">
+            <div class="field">
+              <label class="label">Status</label>
+              <div class="control">
+                <div class="select is-fullwidth">
+                  <select name="status">
+                    <option value="">All</option>
+                    {{range .List.Statuses}}
+                    <option value="{{.}}" {{if eq $.List.Filters.Status .}}selected{{end}}>{{.}}</option>
+                    {{end}}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="column is-2">
+            <div class="field">
+              <label class="label">Source</label>
+              <div class="control">
+                <div class="select is-fullwidth">
+                  <select name="source">
+                    <option value="">All</option>
+                    {{range .List.Sources}}
+                    <option value="{{.}}" {{if eq $.List.Filters.Source .}}selected{{end}}>{{.}}</option>
+                    {{end}}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="column is-1">
+            <div class="field">
+              <label class="label">Score</label>
+              <div class="control">
+                <div class="select is-fullwidth">
+                  <select name="score">
+                    <option value="">All</option>
+                    <option value="90" {{if eq $.List.Filters.Score "90"}}selected{{end}}>90+</option>
+                    <option value="75" {{if eq $.List.Filters.Score "75"}}selected{{end}}>75+</option>
+                    <option value="50" {{if eq $.List.Filters.Score "50"}}selected{{end}}>50+</option>
+                    <option value="25" {{if eq $.List.Filters.Score "25"}}selected{{end}}>25+</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" name="page" value="1">
+        <input type="hidden" name="view" value="{{.View}}">
+        <input type="hidden" name="sort" value="{{.List.Filters.SortBy}}">
+        <input type="hidden" name="order" value="{{.List.Filters.SortOrder}}">
+        <div class="field">
+          <div class="control">
+            <a href="/" class="button is-light">Clear filters</a>
+          </div>
+        </div>
+      </form>
+
+      <div id="games-grid">
+        {{if eq .View "table"}}
+          {{template "table.html" .List}}
+        {{else}}
+          {{template "cards.html" .List}}
+        {{end}}
+      </div>
+    </div>
+  </section>
+{{template "darkmode" .}}
+<script>
+(function() {
+  var viewInput = document.querySelector('input[name="view"]');
+  var savedView = localStorage.getItem('view');
+  if (savedView && viewInput) {
+    viewInput.value = savedView;
+  }
+  function updateViewBtns() {
+    var view = viewInput ? viewInput.value : 'cards';
+    var btns = document.querySelectorAll('[data-view-toggle]');
+    for (var i = 0; i < btns.length; i++) {
+      var b = btns[i];
+      if (b.textContent.trim().toLowerCase() === view) {
+        b.classList.add('is-dark');
+      } else {
+        b.classList.remove('is-dark');
+      }
+    }
+  }
+  updateViewBtns();
+  document.addEventListener('click', function(e) {
+    var viewBtn = e.target.closest('[data-view-toggle]');
+    if (!viewBtn) return;
+    e.preventDefault();
+    var view = viewBtn.textContent.trim().toLowerCase();
+    if (viewInput) viewInput.value = view;
+    localStorage.setItem('view', view);
+    document.cookie = 'view=' + view + ';path=/;max-age=31536000';
+    viewInput.dispatchEvent(new Event('change', {bubbles: true}));
+  });
+  document.addEventListener('htmx:afterSwap', function() {
+    updateViewBtns();
+    window.__swapTheme();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+    if (e.key === '/') {
+      e.preventDefault();
+      var searchInput = document.querySelector('input[name="q"]');
+      if (searchInput) searchInput.focus();
+    }
+    if (e.key === 'n' || e.key === 'ArrowRight') {
+      var nextBtn = document.querySelector('.pagination-next:not([disabled])');
+      if (nextBtn) nextBtn.click();
+    }
+    if (e.key === 'p' || e.key === 'ArrowLeft') {
+      var prevBtn = document.querySelector('.pagination-previous:not([disabled])');
+      if (prevBtn) prevBtn.click();
+    }
+  });
+})();
+</script>
+</body>
+</html>
+{{end}}
