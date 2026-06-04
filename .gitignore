@@ -2,6 +2,7 @@ go-gamelist.exe
 *.exe
 mygames.csv
 mygames.csv.bak
+AGENTS.md
 *.test
 *.out
 
