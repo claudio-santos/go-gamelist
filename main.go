@@ -28,7 +28,7 @@ import (
 //go:embed web/templates/*.html
 var embeddedFiles embed.FS
 
-//go:embed web/static/bulma.min.css
+//go:embed web/static/*
 var staticFS embed.FS
 
 const pageSize = 60
