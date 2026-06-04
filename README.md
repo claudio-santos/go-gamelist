@@ -17,6 +17,15 @@ Web UI for browsing a Playnite game library exported as CSV. Single `exe`, no de
 
 ## Quick Start
 
+**Try it now (no Playnite export needed):**
+
+```powershell
+copy mygames.example.csv mygames.csv
+go-gamelist.exe
+```
+
+**With your own library:**
+
 1. Export your library from Playnite (Desktop plugin) → save as CSV
 2. Download the latest `go-gamelist.exe` from [releases](https://github.com/claudio-santos/go-gamelist/releases)
 3. Place the `.exe` and your CSV in the same folder
