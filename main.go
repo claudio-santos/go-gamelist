@@ -11,6 +11,7 @@ import (
 	"html"
 	"html/template"
 	"io"
+	"io/fs"
 	"log"
 	"net/http"
 	"net/url"
@@ -867,7 +868,8 @@ func filtersFromRequest(r *http.Request) Filters {
 
 func (a *App) routes() http.Handler {
 	mux := http.NewServeMux()
-	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.FS(staticFS))))
+	staticRoot, _ := fs.Sub(staticFS, "web/static")
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.FS(staticRoot))))
 	mux.HandleFunc("/", a.handleHome)
 	mux.HandleFunc("/games", a.handleGames)
 	mux.HandleFunc("/games/", a.handleGameDetail)
