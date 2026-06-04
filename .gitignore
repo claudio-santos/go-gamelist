@@ -1,5 +1,7 @@
 go-gamelist.exe
 *.exe
+mygames.csv
+mygames.csv.bak
 *.test
 *.out
 
