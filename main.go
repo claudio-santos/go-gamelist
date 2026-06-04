@@ -28,6 +28,9 @@ import (
 //go:embed web/templates/*.html
 var embeddedFiles embed.FS
 
+//go:embed web/static/bulma.min.css
+var staticFS embed.FS
+
 const pageSize = 60
 
 var (
@@ -864,6 +867,7 @@ func filtersFromRequest(r *http.Request) Filters {
 
 func (a *App) routes() http.Handler {
 	mux := http.NewServeMux()
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.FS(staticFS))))
 	mux.HandleFunc("/", a.handleHome)
 	mux.HandleFunc("/games", a.handleGames)
 	mux.HandleFunc("/games/", a.handleGameDetail)
